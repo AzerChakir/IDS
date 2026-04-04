@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PCD Intrusion Detection System — Real-time network threat monitoring and analysis.">
+    <title>PCD IDS — Intrusion Detection System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --text-primary: #e8ecf4;
+            --text-secondary: #7a8ba8;
+            --accent-cyan: #00d4ff;
+            --accent-purple: #7b61ff;
+            --accent-green: #00e68a;
+            --glow-cyan: rgba(0, 212, 255, 0.15);
+            --glow-purple: rgba(123, 97, 255, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Animated background grid */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: 0;
+            animation: float 8s ease-in-out infinite;
+        }
+        .orb-1 {
+            width: 400px; height: 400px;
+            background: var(--glow-cyan);
+            top: -100px; right: -100px;
+            animation-delay: 0s;
+        }
+        .orb-2 {
+            width: 350px; height: 350px;
+            background: var(--glow-purple);
+            bottom: -80px; left: -80px;
+            animation-delay: -4s;
+        }
+        .orb-3 {
+            width: 250px; height: 250px;
+            background: rgba(0, 230, 138, 0.1);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.05); }
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            max-width: 700px;
+        }
+
+        /* Shield icon */
+        .shield-icon {
+            width: 80px; height: 80px;
+            margin: 0 auto 2rem;
+            position: relative;
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+        .shield-icon svg {
+            width: 100%; height: 100%;
+            filter: drop-shadow(0 0 20px var(--accent-cyan));
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 15px var(--glow-cyan)); }
+            50% { filter: drop-shadow(0 0 30px var(--accent-cyan)); }
+        }
+
+        /* Typography */
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        /* Status card */
+        .status-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            backdrop-filter: blur(20px);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .status-card:hover {
+            border-color: rgba(0, 230, 138, 0.2);
+            box-shadow: 0 0 30px rgba(0, 230, 138, 0.05);
+        }
+
+        .status-dot {
+            width: 10px; height: 10px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: blink 2s ease-in-out infinite;
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .status-text {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--accent-green);
+        }
+
+        /* Info chips */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+        .chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            border-radius: 100px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            transition: all 0.3s ease;
+        }
+        .chip:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+            color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        /* CTA button */
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--bg-primary);
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.3);
+        }
+        .cta-btn:active { transform: translateY(0); }
+
+        /* API response area */
+        .api-response {
+            margin-top: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-green);
+            text-align: left;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            white-space: pre-wrap;
+        }
+        .api-response.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            position: fixed;
+            bottom: 1.5rem;
+            z-index: 1;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            opacity: 0.5;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <main class="container">
+        <div class="shield-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="url(#grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00d4ff"/>
+                        <stop offset="100%" stop-color="#7b61ff"/>
+                    </linearGradient>
+                </defs>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M9 12l2 2 4-4" stroke="#00e68a" stroke-width="2"/>
+            </svg>
+        </div>
+
+        <h1>Hello, World!</h1>
+        <p class="subtitle">
+            PCD Intrusion Detection System is online.<br>
+            Real-time network threat monitoring & analysis.
+        </p>
+
+        <div class="status-card" id="status-card">
+            <div class="status-dot"></div>
+            <span class="status-text">System Operational</span>
+        </div>
+
+        <div class="chips">
+            <span class="chip">FastAPI</span>
+            <span class="chip">Scikit-Learn</span>
+            <span class="chip">Real-time Analysis</span>
+            <span class="chip">Threat Detection</span>
+        </div>
+
+        <button class="cta-btn" id="ping-btn" onclick="pingApi()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Ping API
+        </button>
+
+        <div class="api-response" id="api-response"></div>
+    </main>
+
+    <footer>PCD IDS v0.1.0</footer>
+
+    <script>
+        async function pingApi() {
+            const el = document.getElementById('api-response');
+            el.classList.remove('visible');
+            el.textContent = '';
+
+            try {
+                const res = await fetch('/health');
+                const data = await res.json();
+                el.textContent = `GET /health  →  ${res.status} OK\n${JSON.stringify(data, null, 2)}`;
+            } catch (err) {
+                el.textContent = `Error: ${err.message}`;
+                el.style.color = '#ff5c5c';
+            }
+
+            // Trigger animation
+            requestAnimationFrame(() => el.classList.add('visible'));
+        }
+    </script>
+</body>
+</html>

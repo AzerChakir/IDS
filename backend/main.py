@@ -1,26 +1,30 @@
+import os
 from pathlib import Path
-
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+
+from backend.routes.api import router as api_router
 
 load_dotenv()
 
 app = FastAPI(
-    title="PCD IDS",
-    description="Intrusion Detection System API",
-    version="0.1.0",
+    title="PCD IDS Dashboard API",
+    description="Intrusion Detection System API with Machine Learning",
+    version="0.2.0",
 )
 
-FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins for development
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
-
-@app.get("/", response_class=HTMLResponse)
-async def root():
-    index_file = FRONTEND_DIR / "index.html"
-    return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
-
+# Include API Router
+app.include_router(api_router)
 
 @app.get("/health")
 async def health_check():

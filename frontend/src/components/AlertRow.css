@@ -1,0 +1,40 @@
+.alert-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  transition: all 0.25s ease;
+}
+.alert-row:hover {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.alert-row--resolved { opacity: 0.5; }
+.alert-row__left { display: flex; align-items: center; gap: 12px; min-width: 220px; }
+.alert-row__badge {
+  font-size: 0.65rem; font-weight: 700; padding: 4px 10px;
+  border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+}
+.alert-row__badge--critical { background: rgba(255, 71, 87, 0.15); color: #ff4757; }
+.alert-row__badge--high { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+.alert-row__badge--medium { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.alert-row__badge--low { background: rgba(0, 230, 138, 0.15); color: #00e68a; }
+.alert-row__info { display: flex; flex-direction: column; }
+.alert-row__type { font-weight: 600; font-size: 0.875rem; color: #fff; }
+.alert-row__meta { font-size: 0.75rem; color: rgba(255,255,255,0.35); font-family: 'JetBrains Mono', monospace; }
+.alert-row__center { flex: 1; }
+.alert-row__desc { font-size: 0.8rem; color: rgba(255,255,255,0.4); line-height: 1.4; }
+.alert-row__time { font-size: 0.75rem; color: rgba(255,255,255,0.3); white-space: nowrap; min-width: 100px; text-align: right; }
+.alert-row__actions { display: flex; gap: 6px; }
+.alert-row__btn {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.4);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease;
+}
+.alert-row__btn:hover { transform: scale(1.1); }
+.alert-row__btn--admit:hover { background: rgba(0,230,138,0.15); color: #00e68a; border-color: rgba(0,230,138,0.3); }
+.alert-row__btn--block:hover { background: rgba(255,71,87,0.15); color: #ff4757; border-color: rgba(255,71,87,0.3); }
+.alert-row__btn--pause:hover { background: rgba(245,158,11,0.15); color: #f59e0b; border-color: rgba(245,158,11,0.3); }

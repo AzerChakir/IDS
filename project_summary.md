@@ -30,11 +30,15 @@ The project is a full-stack Intrusion Detection System composed of a machine lea
 1. **Frontend Migration & Development:** 
    - Transitioned from a legacy HTML-based interface to a modern component-driven React dashboard.
    - Bootstrapped Vite+React and configured Tailwind CSS. Let the IDE configurations recognize native CSS Tailwind features (`@tailwind`).
-   - Set up dashboard UI mapping for live counters, suspicious entries metrics, and alert tables.
+   - Built a comprehensive set of premium components: Sidebar, StatCard, TrafficChart, and AlertRow.
+   - Developed full pages: Dashboard (home), Alerts, History, Statistics, Settings, and an Admin Login page.
+   - Implemented React Router for client-side navigation with a protected route layout.
+   - Created extensive mock data for development and testing.
 
 2. **Backend API Restructuring:** 
    - Stabilized the backend startup process by resolving application instantiation errors (UVicorn missing "app").
    - Segmented APIs into routes and services, implementing responder and scoring logic to link up the networking logic seamlessly.
+   - Added an authentication endpoint (`/api/auth/login`) to support the new admin login page.
 
 3. **Containerization & System Finalization:**
    - Authored Dockerfiles for the backend (Python FastAPI setup) and frontend (Node/Nginx deployment).
@@ -42,6 +46,7 @@ The project is a full-stack Intrusion Detection System composed of a machine lea
    - Assembled system documentation indicating the steps needed to run, deploy, and maintain the application.
 
 ## Next Steps
-- Link up live network hooks to the ML model (if required).
+- Link up live network hooks to the ML model instead of using mock data.
 - Perform end-to-end integration testing utilizing `docker-compose up` to ensure backend and frontend communicate effectively.
-- Add additional administrative tools logic like saving allowed IPs and history logs to a persistent database.
+- Add additional administrative tools logic like saving allowed IPs, alert resolutions, and history logs to a persistent database (e.g., PostgreSQL).
+- Implement real JWT authentication and authorization in the backend.

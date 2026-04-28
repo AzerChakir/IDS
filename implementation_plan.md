@@ -88,16 +88,18 @@ frontend/
 - **Responsive** layout
 
 ## Steps
-1. Initialize Vite + React project in `frontend/`
-2. Install dependencies (tailwindcss, recharts, lucide-react, react-router-dom)
-3. Configure Tailwind with custom theme
-4. Create base styles in `index.css`
-5. Build Sidebar component
-6. Build StatCard, AlertRow, TrafficChart components
-7. Build Dashboard page
-8. Build Alerts page with action buttons
-9. Build History page
-10. Build Statistics page with charts
-11. Wire up routing in App.jsx
-12. Add mock data
-13. Test and polish
+- [x] 1. Initialize Vite + React project in `frontend/`
+- [x] 2. Install dependencies (tailwindcss, recharts, lucide-react, react-router-dom)
+- [x] 3. Configure Tailwind with custom theme
+- [x] 4. Create base styles in `index.css`
+- [x] 5. Build Sidebar component
+- [x] 6. Build StatCard, AlertRow, TrafficChart components
+- [x] 7. Build Dashboard page
+- [x] 8. Build Alerts page with action buttons
+- [x] 9. Build History page
+- [x] 10. Build Statistics page with charts
+- [x] 11. Wire up routing in App.jsx
+- [x] 12. Add mock data
+- [x] 13. Add Login page with animated UI and auth guard layout
+- [x] 14. Add simple /api/auth/login endpoint to backend
+- [x] 15. Test and polish

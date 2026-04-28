@@ -1,0 +1,32 @@
+.alerts-page { display: flex; flex-direction: column; gap: 20px; }
+.alerts-page__header { display: flex; justify-content: space-between; align-items: flex-start; }
+.alerts-page__title {
+  font-size: 1.75rem; font-weight: 800; margin: 0;
+  background: linear-gradient(135deg, #fff, rgba(255,255,255,0.7));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.alerts-page__subtitle { font-size: 0.85rem; color: rgba(255,255,255,0.35); margin-top: 4px; }
+.alerts-page__filters {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.alerts-page__search {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 10px 14px; flex: 1; min-width: 200px;
+  color: rgba(255,255,255,0.5);
+}
+.alerts-page__search input {
+  background: none; border: none; outline: none; color: #fff; font-size: 0.85rem; width: 100%;
+}
+.alerts-page__search input::placeholder { color: rgba(255,255,255,0.3); }
+.alerts-page__filter-group {
+  display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.4);
+}
+.alerts-page__filter-group select {
+  background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 0.8rem;
+  cursor: pointer; outline: none;
+}
+.alerts-page__filter-group select option { background: #1e293b; color: #fff; }
+.alerts-page__list { display: flex; flex-direction: column; gap: 8px; }
+.alerts-page__empty { color: rgba(255,255,255,0.3); font-size: 0.85rem; text-align: center; padding: 40px; }

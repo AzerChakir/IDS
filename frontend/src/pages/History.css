@@ -1,0 +1,72 @@
+.history-page { display: flex; flex-direction: column; gap: 20px; }
+.history-page__header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+.history-page__title {
+  font-size: 1.75rem; font-weight: 800; margin: 0;
+  background: linear-gradient(135deg, #fff, rgba(255,255,255,0.7));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.history-page__subtitle { font-size: 0.85rem; color: rgba(255,255,255,0.35); margin-top: 4px; }
+.history-page__export {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 10px; padding: 10px 18px; color: #00d4ff; font-size: 0.85rem;
+  font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+}
+.history-page__export:hover { background: rgba(0,212,255,0.2); }
+.history-page__filters {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.history-page__search {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 10px 14px; flex: 1; min-width: 200px;
+  color: rgba(255,255,255,0.5);
+}
+.history-page__search input {
+  background: none; border: none; outline: none; color: #fff; font-size: 0.85rem; width: 100%;
+}
+.history-page__search input::placeholder { color: rgba(255,255,255,0.3); }
+.history-page__filters select {
+  background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 0.8rem;
+  cursor: pointer; outline: none;
+}
+.history-page__filters select option { background: #1e293b; color: #fff; }
+.history-page__table-wrap {
+  background: rgba(30,41,59,0.4); border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px; overflow: hidden;
+}
+.history-page__table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.history-page__table thead { border-bottom: 1px solid rgba(255,255,255,0.06); }
+.history-page__table th {
+  text-align: left; padding: 14px 16px; font-weight: 600; font-size: 0.75rem;
+  color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px;
+}
+.history-page__table td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.history-page__table tr { transition: background 0.15s ease; }
+.history-page__table tbody tr:hover { background: rgba(255,255,255,0.03); }
+.history-page__time { color: rgba(255,255,255,0.45); }
+.history-page__ip { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+.history-page__ip--dest { color: rgba(255,255,255,0.4); }
+.history-page__protocol {
+  padding: 3px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 600;
+  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6);
+}
+.history-page__port { color: rgba(255,255,255,0.35); font-size: 0.8rem; }
+.history-page__size { color: rgba(255,255,255,0.4); }
+.history-page__status {
+  padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700;
+}
+.history-page__status--allowed { background: rgba(0,230,138,0.12); color: #00e68a; }
+.history-page__status--blocked { background: rgba(255,71,87,0.12); color: #ff4757; }
+.history-page__pagination {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  font-size: 0.85rem; color: rgba(255,255,255,0.5);
+}
+.history-page__pagination button {
+  background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 8px 12px; color: rgba(255,255,255,0.5);
+  cursor: pointer; display: flex; align-items: center; transition: all 0.2s ease;
+}
+.history-page__pagination button:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: #fff; }
+.history-page__pagination button:disabled { opacity: 0.3; cursor: not-allowed; }

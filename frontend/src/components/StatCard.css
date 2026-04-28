@@ -1,0 +1,108 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   StatCard — Glassmorphism metric card
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.stat-card {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.4), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card:hover {
+  border-color: rgba(0, 212, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+.stat-card--alert {
+  border-color: rgba(255, 71, 87, 0.3);
+  box-shadow: 0 0 20px rgba(255, 71, 87, 0.08);
+}
+
+.stat-card--alert::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 71, 87, 0.5), transparent);
+}
+
+/* ─── Icon ──────────────────────────────────────────────────────────────── */
+
+.stat-card__icon {
+  min-width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(0, 212, 255, 0.1);
+  color: #00d4ff;
+}
+
+.stat-card__icon--alert {
+  background: rgba(255, 71, 87, 0.12);
+  color: #ff4757;
+}
+
+/* ─── Content ───────────────────────────────────────────────────────────── */
+
+.stat-card__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card__title {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-card__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.stat-card__value--alert {
+  color: #ff4757;
+}
+
+.stat-card__trend {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.stat-card__trend--up {
+  color: #00e68a;
+}
+
+.stat-card__trend--down {
+  color: #ff4757;
+}

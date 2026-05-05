@@ -5,6 +5,7 @@ from typing import Dict, Any
 
 from backend.services.scorer import scorer
 from backend.services.dashboard import dashboard_service
+from backend.services.llm_rag import llm_rag_service
 
 router = APIRouter(prefix="/api")
 
@@ -65,3 +66,20 @@ async def analyze_traffic(data: TrafficData):
         return {"status": "success", "result": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/alert/{alert_id}/analyze")
+async def analyze_alert_rag(alert_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT type, description FROM alerts WHERE id = ?", (alert_id,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    if not row:
+        raise HTTPException(status_code=404, detail="Alert not found")
+        
+    alert_type = row["type"]
+    alert_desc = row["description"]
+    
+    analysis = llm_rag_service.analyze_alert(alert_type, alert_desc)
+    return {"status": "success", "analysis": analysis}

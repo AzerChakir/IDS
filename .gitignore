@@ -1,0 +1,6 @@
+ai/datasets/*.parquet
+CIC-IDS2017/
+*.pkl
+*.pth
+ai/datasets/*.csv
+ai/models/

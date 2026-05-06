@@ -81,8 +81,22 @@ def train_network_models():
     """Trains RF Baseline, Isolation Forest, and CNN-LSTM on Flow Data."""
     logger.info("--- Starting Network Traffic Model Training ---")
     
-    data_path = DATA_DIR / "network_traffic.csv"
-    if not data_path.exists():
+    data_path_csv = DATA_DIR / "network_traffic.csv"
+    data_path_parquet = DATA_DIR / "network_traffic.parquet"
+    
+    if data_path_parquet.exists():
+        logger.info("Loading real network data from Parquet file...")
+        df = pd.read_parquet(data_path_parquet)
+        if 'attack_label' in df.columns:
+            df.rename(columns={'attack_label': 'Label'}, inplace=True)
+            # The CIC-IDS dataset has many columns. We'll sample it to avoid memory issues during training.
+            if len(df) > 50000:
+                logger.info("Dataset is very large. Sampling 50,000 rows for faster training...")
+                df = df.sample(n=50000, random_state=42)
+    elif data_path_csv.exists():
+        logger.info("Loading real network data from CSV file...")
+        df = pd.read_csv(data_path_csv)
+    else:
         logger.warning("No real network data found. Generating synthetic dummy data.")
         np.random.seed(42)
         n_samples = 5000
@@ -94,12 +108,13 @@ def train_network_models():
             'Flow_Packets_s': np.random.uniform(0.1, 1000, n_samples),
             'Label': np.random.choice(['BENIGN', 'DoS', 'PortScan', 'BruteForce'], p=[0.7, 0.15, 0.1, 0.05], size=n_samples)
         })
-    else:
-        df = pd.read_csv(data_path)
-        df.replace([np.inf, -np.inf], np.nan, inplace=True)
-        df.dropna(inplace=True)
+
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    df.dropna(inplace=True)
         
     X = df.drop('Label', axis=1)
+    # Ensure all features are numeric
+    X = X.select_dtypes(include=[np.number])
     y = df['Label']
     
     # 1. Preprocessing

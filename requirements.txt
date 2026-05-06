@@ -7,3 +7,14 @@ numpy
 scikit-learn
 joblib
 google-generativeai
+torch
+transformers
+imbalanced-learn
+shap
+river
+optuna
+xgboost
+lightgbm
+matplotlib
+seaborn
+jupyter

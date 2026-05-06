@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any
 
-from backend.services.scorer import scorer
+from ai.engine import scorer
 from backend.services.dashboard import dashboard_service
 from backend.services.llm_rag import llm_rag_service
 

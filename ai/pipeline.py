@@ -116,6 +116,15 @@ def train_network_models():
     # Ensure all features are numeric
     X = X.select_dtypes(include=[np.number])
     y = df['Label']
+
+    # Filter out classes with too few samples for SMOTE (minimum 6 samples needed for default k_neighbors=5)
+    counts = y.value_counts()
+    keep_classes = counts[counts >= 6].index
+    if len(keep_classes) < len(counts):
+        logger.info(f"Removing classes with < 6 samples: {list(set(counts.index) - set(keep_classes))}")
+        mask = y.isin(keep_classes)
+        X = X[mask]
+        y = y[mask]
     
     # 1. Preprocessing
     le = LabelEncoder()
@@ -212,7 +221,7 @@ def train_web_model():
         weight_decay=0.01,
         logging_dir=str(MODELS_DIR / 'logs'),
         logging_steps=10,
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         save_strategy="epoch",
         disable_tqdm=False
     )

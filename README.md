@@ -1,65 +1,93 @@
 # AI-based Intrusion Detection and Automated Response System (IDRS)
 
-## Overview
-This project proposes the design and implementation of an AI-based Intrusion Detection and Automated Response System (IDRS) specifically tailored for educational web platforms. Educational institutions have increasingly become targets of cyberattacks (data breaches, DoS, SQL injections, XSS). Traditional signature-based systems are no longer sufficient. 
+## 🛡️ Project Overview
+This project implements a production-grade **Intrusion Detection and Automated Response System (IDRS)** specifically designed to protect educational web platforms. Leveraging a multi-layered AI architecture, the system detects network-level anomalies and sophisticated web attacks in real-time, providing automated mitigation through an LLM-powered response engine.
 
-This IDRS uses a dual-model approach and Large Language Models (LLMs) to provide real-time threat detection, automated mitigation, and enhanced system resilience.
+## 🚀 Key Features
+- **Multi-Model Network Defense**: 
+    - **Classical ML Baseline**: Random Forest classifier for high-speed traffic profiling.
+    - **Deep Learning Core**: Hybrid **CNN-LSTM** architecture for sequential pattern recognition in network flows.
+    - **Anomaly Detection**: Isolation Forest for detecting zero-day threats and unknown traffic patterns.
+- **Advanced Web Attack Detection**: 
+    - **DistilBERT Transformers**: Fine-tuned NLP model for identifying SQL Injection, XSS, and malicious payloads with high precision.
+- **Intelligent Response Engine (RAG + LLM)**: 
+    - Integrates **Google Gemini 1.5 Flash** with a **Retrieval-Augmented Generation (RAG)** system to generate context-aware remediation strategies based on security playbooks.
+- **Automated Dataset Management**: 
+    - Built-in integration with **Hugging Face** to automatically download and process research datasets like **CIC-IDS2017** and **UNSW-NB15**.
+- **Real-time Dashboard**: 
+    - Modern React-based UI and FastAPI backend for live threat monitoring and statistics.
 
-## Features
-- **Network Anomaly Detection:** Utilizes a fine-tuned Random Forest model to detect network-level attacks such as Denial of Service (DoS) and Port Scanning based on flow features.
-- **Web Application Attack Detection:** Employs a TF-IDF and Logistic Regression pipeline trained on malicious web payloads to specifically block SQL Injections (SQLi) and Cross-Site Scripting (XSS).
-- **Intelligent Incident Response (RAG + LLM):** Integrates Google's Gemini LLM with a Retrieval-Augmented Generation (RAG) system. When an alert triggers, the system queries its cybersecurity knowledge base for mitigation playbooks and uses the LLM to generate clear threat explanations and automated remediation strategies.
-- **Dashboard API:** FastAPI-powered backend with endpoints for traffic analysis, alert management, and real-time statistics.
+## 📂 Project Structure
+```bash
+├── ai/
+│   ├── datasets/         # Automated dataset storage (Parquet/CSV)
+│   ├── models/           # Trained model artifacts (Weights, Pickles)
+│   ├── engine.py         # Real-time inference engine
+│   └── pipeline.py       # Full training & fine-tuning pipeline
+├── backend/
+│   ├── routes/           # API endpoints (FastAPI)
+│   └── services/         # Core business logic (DB, RAG, Dashboard)
+├── frontend/             # React-based monitoring dashboard
+├── tests/                # Automated test suite (PyTest)
+├── dataset.py            # Hugging Face dataset utility
+└── requirements.txt      # Project dependencies
+```
 
-## Project Structure
-- `backend/`: FastAPI application containing routes, models, and services (including the LLM RAG service and Traffic Scorer).
-- `ml/`: Machine Learning pipeline, model training scripts, and datasets.
-- `data/`: Raw and processed data.
-- `frontend/`: Dashboard UI (to be implemented).
+## 🛠️ Installation & Setup
 
-## Installation
-
-1. Clone the repository:
+1. **Clone the repository**:
    ```bash
    git clone <repository-url>
    cd PCD_IDS
    ```
 
-2. Install the required dependencies:
+2. **Install Dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Set your environment variables (create a `.env` file or export them):
-   ```bash
-   # Required for the Intelligent Response system
-   export GEMINI_API_KEY="your_api_key_here"
+3. **Configure Environment**:
+   Create a `.env` file in the root directory:
+   ```env
+   GEMINI_API_KEY="your_google_gemini_key_here"
    ```
 
-## Usage
+## 📈 Usage
 
-### 1. Train the ML Models
-If the models are not present in `backend/models`, you can train them by running the pipeline:
+### 1. Prepare Data & Train
+You can automatically download research data and train all models in one go:
 ```bash
-python -m ml.pipeline
-```
-This will train both the Network Anomaly Model and the Web Attack Model and evaluate them.
+# 1. Download datasets (CIC-IDS2017)
+python download_datasets.py
+python download_web_attacks.py
 
-### 2. Run the API Server
-Start the FastAPI backend:
+# 2. Run the training pipeline
+python ai/pipeline.py
+```
+
+### 2. Launch the System
+Start the backend API:
 ```bash
 uvicorn backend.main:app --reload
 ```
-The API will be available at `http://localhost:8000`. 
-Check the interactive API documentation at `http://localhost:8000/docs`.
+The API documentation will be available at `http://localhost:8000/docs`.
 
-### Key Endpoints
-- `POST /api/analyze`: Submit traffic features/payloads for anomaly scoring.
-- `GET /api/alert/{alert_id}/analyze`: Trigger the LLM RAG engine to retrieve a mitigation playbook and analyze a specific alert.
-- `GET /api/dashboard/stats`: Retrieve high-level dashboard statistics.
+Start the Frontend:
+```bash
+cd frontend
+npm run dev
+```
 
-## Built With
-- **FastAPI** - Backend Framework
-- **Scikit-Learn** - Machine Learning Models (Random Forest, Logistic Regression, TF-IDF)
-- **Google Generative AI (Gemini)** - LLM for Incident Response (RAG)
-- **Pandas & NumPy** - Data Processing
+## 🧪 Testing
+Run the automated test suite to verify the system integrity:
+```bash
+pytest
+```
+
+## 🛡️ Built With
+- **FastAPI** - High-performance backend
+- **PyTorch** - Deep Learning (CNN-LSTM)
+- **Transformers (Hugging Face)** - NLP (DistilBERT)
+- **Scikit-Learn** - Classical Machine Learning
+- **Google Generative AI** - LLM & RAG Engine
+- **React** - Frontend Dashboard

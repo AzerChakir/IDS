@@ -3,9 +3,12 @@ import pandas as pd
 from datasets import load_dataset
 from huggingface_hub import hf_hub_download, snapshot_download
 try:
-    ipython = get_ipython()
-    from tqdm.notebook import tqdm as tqdmn
-except:
+    from IPython import get_ipython
+    if get_ipython() is not None:
+        from tqdm.notebook import tqdm as tqdmn
+    else:
+        from tqdm import tqdm as tqdmn
+except ImportError:
     from tqdm import tqdm as tqdmn
 
 
@@ -40,9 +43,12 @@ class Dataset:
             self.flow_file = "CICIDS_Flow"
 
     def download(self, use_cache=True):
-        if self.subset == 'all' and self.files == 'all':
+        all_subsets = ['Network-Flows', 'Packet-Fields', 'Packet-Bytes', 'Payload-Bytes']
+        all_files = [i for i in range(1, 19)]
+        if self.subset == all_subsets and self.files == all_files:
             snapshot_download(repo_id=f"rdpahalavan/{self.dataset}", allow_patterns="*.parquet", repo_type="dataset",
                               local_dir=self.dataset, local_dir_use_symlinks=use_cache)
+            return
         for subset in self.subset:
             if subset == 'Network-Flows':
                 hf_hub_download(repo_id=f"rdpahalavan/{self.dataset}", subfolder=subset,

@@ -3,6 +3,29 @@
 ## 🛡️ Project Overview
 This project implements a production-grade **Intrusion Detection and Automated Response System (IDRS)** specifically designed to protect educational web platforms. Leveraging a multi-layered AI architecture, the system detects network-level anomalies and sophisticated web attacks in real-time, providing automated mitigation through an LLM-powered response engine.
 
+## 🏗️ Architecture Diagrams
+
+### 1. Dataset Preprocessing Workflow
+> Raw PCAP/flow data from HuggingFace → multi-subset extraction → merging → hex decoding → labeled Parquet files.
+
+![Dataset Preprocessing Workflow](./dataset_preprocessing_workflow.png)
+
+---
+
+### 2. Network-Flow Model Architecture
+> Three parallel classifiers (RF Baseline · Hybrid CNN-LSTM · Isolation Forest) trained on SMOTE-balanced flow features.
+
+![Network-Flow Model Architecture](./network_flow_model_architecture.png)
+
+---
+
+### 3. Web Payload Detection Pipeline
+> Raw HTTP payloads (SQLi · XSS · Normal) → DistilBERT tokenization → fine-tuned transformer → binary threat classification.
+
+![Web Payload Detection Pipeline](./web_payload_detection_pipeline.png)
+
+---
+
 ## 🚀 Key Features
 - **Multi-Model Network Defense**: 
     - **Classical ML Baseline**: Random Forest classifier for high-speed traffic profiling.

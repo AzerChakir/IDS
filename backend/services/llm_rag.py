@@ -115,23 +115,18 @@ class LLMRagService:
         context = self.retrieve_context(query)
 
         system_prompt = (
-            "You are the Automated Response Engine for the IDRS (Intrusion Detection & Response System). "
-            "Your objective is to provide rigorous, highly structured, and actionable cybersecurity analysis. "
-            "Do NOT use markdown bold/italic tags (like **). Instead, use clear CAPITALIZED section titles and standard bullet points (-) "
-            "so that it renders cleanly on the frontend. Keep your tone clinical, professional, and authoritative."
+            "You are the Automated Response Engine for the IDRS. "
+            "Your objective is to provide a highly concise, 3-line incident summary. "
+            "Do NOT use markdown bold/italic tags (like **). Do NOT write long paragraphs. "
+            "Output EXACTLY three lines. Each line must start with the section title. Keep it clinical and brief."
         )
 
         user_prompt = (
-            f"INCIDENT ALERT: {alert_label}\n"
-            f"TECHNICAL DETAILS: {alert_details}\n"
-            f"RETRIEVED PLAYBOOK: {context}\n\n"
-            "Generate a rigorous incident response plan containing EXACTLY these three sections:\n\n"
-            "THREAT EXPLANATION:\n"
-            "[Provide a brief, technical explanation of the identified threat]\n\n"
-            "IMMEDIATE MITIGATION:\n"
-            "[State the exact automated mitigation step to execute, e.g., IP blocked, session terminated]\n\n"
-            "LONG-TERM REMEDIATION:\n"
-            "[Provide 1-2 specific, strategic security recommendations to prevent recurrence]"
+            f"INCIDENT: {alert_label} | DETAILS: {alert_details} | PLAYBOOK: {context}\n\n"
+            "Respond with EXACTLY three short sentences formatted exactly like this:\n"
+            "THREAT EXPLANATION: [One short sentence explaining the threat]\n"
+            "IMMEDIATE MITIGATION: [One short sentence stating the exact automated action taken]\n"
+            "LONG-TERM REMEDIATION: [One short sentence with a strategic security recommendation]"
         )
 
         if self.use_llm and self.llm_type == "huggingface":

@@ -47,39 +47,36 @@ class LLMRagService:
         self.use_llm = False
         self.llm_type = None
         self.model = None
+        self.hf_client = None
 
         # Try Hugging Face (free tier)
         hf_token = os.getenv("HUGGINGFACE_API_KEY")
         print(f"[DEBUG] HF Token loaded: {hf_token[:10] if hf_token else 'None'}...")
         if hf_token and hf_token != "your_huggingface_token_here":
             try:
-                self.hf_token = hf_token
+                from huggingface_hub import InferenceClient
+                self.hf_client = InferenceClient(token=hf_token)
+                
                 # Models with verified Inference API support
                 models_to_try = [
-                    "facebook/opt-125m",
-                    "gpt2",
-                    "bigscience/bloom-560m"
+                    "meta-llama/Llama-3.2-1B-Instruct",
+                    "HuggingFaceH4/zephyr-7b-beta",
+                    "google/gemma-1.1-2b-it"
                 ]
 
                 for model_name in models_to_try:
                     try:
                         print(f"[DEBUG] Trying model: {model_name}")
-                        self.hf_model_url = f"https://api-inference.huggingface.co/models/{model_name}"
-                        test_response = requests.post(
-                            self.hf_model_url,
-                            headers={"Authorization": f"Bearer {self.hf_token}"},
-                            json={"inputs": "Hello"},
-                            timeout=15
+                        test_response = self.hf_client.chat_completion(
+                            model=model_name,
+                            messages=[{"role": "user", "content": "Hello"}],
+                            max_tokens=5
                         )
-                        print(f"[DEBUG] Response status: {test_response.status_code}")
-                        if test_response.status_code != 200:
-                            print(f"[DEBUG] Response body: {test_response.text[:200]}")
-                        if test_response.status_code == 200:
-                            self.model = model_name
-                            self.use_llm = True
-                            self.llm_type = "huggingface"
-                            print(f"[SUCCESS] LLM initialized: {model_name}")
-                            break
+                        self.model = model_name
+                        self.use_llm = True
+                        self.llm_type = "huggingface"
+                        print(f"[SUCCESS] LLM initialized: {model_name}")
+                        break
                     except Exception as e:
                         print(f"[DEBUG] Error with {model_name}: {e}")
                         continue
@@ -89,13 +86,13 @@ class LLMRagService:
         # Final status message
         if self.use_llm:
             print(f"\n{'='*50}")
-            print(f"✓ LLM INITIALIZED SUCCESSFULLY")
+            print(f"[+] LLM INITIALIZED SUCCESSFULLY")
             print(f"  Model: {self.model}")
             print(f"  Type: {self.llm_type}")
             print(f"{'='*50}\n")
         else:
             print(f"\n{'='*50}")
-            print(f"✗ LLM INITIALIZATION FAILED")
+            print(f"[-] LLM INITIALIZATION FAILED")
             print(f"  Reason: No valid HuggingFace API key or all models failed")
             print(f"  Will use mock responses instead")
             print(f"{'='*50}\n")
@@ -130,37 +127,14 @@ class LLMRagService:
 
         if self.use_llm and self.llm_type == "huggingface":
             try:
-                # Use Hugging Face Inference API
-                headers = {"Authorization": f"Bearer {self.hf_token}"}
-
-                # Adjust prompt format for chat models
-                if "TinyLlama" in self.model or "gemma" in self.model:
-                    payload = {
-                        "inputs": prompt,
-                        "parameters": {"max_new_tokens": 256, "temperature": 0.3}
-                    }
-                else:
-                    payload = {
-                        "inputs": prompt,
-                        "parameters": {"max_new_tokens": 256, "temperature": 0.3}
-                    }
-
-                response = requests.post(
-                    self.hf_model_url,
-                    headers=headers,
-                    json=payload,
-                    timeout=60
+                response = self.hf_client.chat_completion(
+                    model=self.model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=256,
+                    temperature=0.3
                 )
-                if response.status_code == 200:
-                    result = response.json()
-                    if isinstance(result, list) and len(result) > 0:
-                        analysis = result[0].get("generated_text", "")
-                    else:
-                        analysis = str(result)
-                    logger.info(f"LLM response received: {analysis[:100]}...")
-                else:
-                    logger.error(f"HF API error: {response.status_code} - {response.text}")
-                    analysis = self._mock_generation(alert_label, context)
+                analysis = response.choices[0].message.content
+                logger.info(f"LLM response received: {analysis[:100]}...")
             except Exception as e:
                 logger.error(f"LLM Generation failed: {e}")
                 analysis = self._mock_generation(alert_label, context)

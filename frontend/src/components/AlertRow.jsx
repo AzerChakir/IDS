@@ -25,10 +25,18 @@ export default function AlertRow({ alert, onAdmit, onBlock, onPause }) {
       if (!res.ok) {
         setAnalysis(data.detail || "Alert not found in database");
       } else {
-        setAnalysis(data.analysis || data.result || "No analysis available");
+        // analysis is an object with llm_analysis field
+        const analysisData = data.analysis;
+        if (analysisData && analysisData.llm_analysis) {
+          setAnalysis(analysisData.llm_analysis);
+        } else if (analysisData && analysisData.retrieved_context) {
+          setAnalysis(analysisData.retrieved_context);
+        } else {
+          setAnalysis("No analysis available");
+        }
       }
     } catch (err) {
-      setAnalysis("Failed to analyze");
+      setAnalysis("Failed to analyze: " + err.message);
     }
     setAnalyzing(false);
   };

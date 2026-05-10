@@ -4,11 +4,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
+# Load .env from backend directory (must be before imports)
+load_dotenv(Path(__file__).parent / ".env")
+
 from backend.routes.api import router as api_router
 from backend.routes.auth import router as auth_router
-
-# Load .env from backend directory
-load_dotenv(Path(__file__).parent / ".env")
 
 app = FastAPI(
     title="PCD IDS Dashboard API",

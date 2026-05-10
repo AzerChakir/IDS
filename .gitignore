@@ -4,3 +4,7 @@ CIC-IDS2017/
 *.pth
 ai/datasets/*.csv
 ai/models/
+
+# Environment variables
+.env
+.env.*

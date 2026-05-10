@@ -1,5 +1,5 @@
-import React from "react";
-import { ShieldCheck, Ban, PauseCircle } from "lucide-react";
+import React, { useState } from "react";
+import { ShieldCheck, Ban, PauseCircle, Brain, Loader2 } from "lucide-react";
 import "./AlertRow.css";
 
 const severityClass = {
@@ -10,6 +10,28 @@ const severityClass = {
 };
 
 export default function AlertRow({ alert, onAdmit, onBlock, onPause }) {
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysis, setAnalysis] = useState(null);
+
+  const handleAnalyze = async () => {
+    if (analysis) {
+      setAnalysis(null);
+      return;
+    }
+    setAnalyzing(true);
+    try {
+      const res = await fetch(`/api/alert/${alert.id}/analyze`);
+      const data = await res.json();
+      if (!res.ok) {
+        setAnalysis(data.detail || "Alert not found in database");
+      } else {
+        setAnalysis(data.analysis || data.result || "No analysis available");
+      }
+    } catch (err) {
+      setAnalysis("Failed to analyze");
+    }
+    setAnalyzing(false);
+  };
   return (
     <div className={`alert-row ${alert.status === "RESOLVED" ? "alert-row--resolved" : ""}`}>
       <div className="alert-row__left">
@@ -36,6 +58,14 @@ export default function AlertRow({ alert, onAdmit, onBlock, onPause }) {
       </div>
       <div className="alert-row__actions">
         <button
+          className="alert-row__btn alert-row__btn--analyze"
+          onClick={handleAnalyze}
+          disabled={analyzing}
+          title="AI Analysis & Remediation"
+        >
+          {analyzing ? <Loader2 size={16} className="spinning" /> : <Brain size={16} />}
+        </button>
+        <button
           className="alert-row__btn alert-row__btn--admit"
           onClick={() => onAdmit?.(alert)}
           title="Admit / Whitelist"
@@ -57,6 +87,11 @@ export default function AlertRow({ alert, onAdmit, onBlock, onPause }) {
           <PauseCircle size={16} />
         </button>
       </div>
+      {analysis && (
+        <div className="alert-row__analysis">
+          <strong>AI Recommendation:</strong> {analysis}
+        </div>
+      )}
     </div>
   );
 }

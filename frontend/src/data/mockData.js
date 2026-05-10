@@ -53,9 +53,9 @@ function generateTrafficLogs(count = 80) {
 function generateAlerts(count = 24) {
   const alerts = [];
   const now = Date.now();
-  for (let i = 0; i < count; i++) {
+  for (let i = 1; i <= count; i++) {
     alerts.push({
-      id: `alert-${i}`,
+      id: i,
       timestamp: new Date(now - i * 60000 * 8).toISOString(),
       severity: SEVERITIES[Math.floor(Math.random() * SEVERITIES.length)],
       source_ip: randIP(),

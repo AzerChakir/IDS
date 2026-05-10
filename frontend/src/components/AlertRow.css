@@ -38,3 +38,18 @@
 .alert-row__btn--admit:hover { background: rgba(0,230,138,0.15); color: #00e68a; border-color: rgba(0,230,138,0.3); }
 .alert-row__btn--block:hover { background: rgba(255,71,87,0.15); color: #ff4757; border-color: rgba(255,71,87,0.3); }
 .alert-row__btn--pause:hover { background: rgba(245,158,11,0.15); color: #f59e0b; border-color: rgba(245,158,11,0.3); }
+.alert-row__btn--analyze:hover { background: rgba(99,102,241,0.2); color: #818cf8; border-color: rgba(99,102,241,0.4); }
+.alert-row__btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.spinning { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.alert-row__analysis {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  background: rgba(99,102,241,0.1);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: #a5b4fc;
+  line-height: 1.5;
+}

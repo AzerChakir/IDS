@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 from backend.routes.api import router as api_router
 from backend.routes.auth import router as auth_router
 
-load_dotenv()
+# Load .env from backend directory
+load_dotenv(Path(__file__).parent / ".env")
 
 app = FastAPI(
     title="PCD IDS Dashboard API",

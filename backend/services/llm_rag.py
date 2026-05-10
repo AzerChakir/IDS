@@ -114,24 +114,36 @@ class LLMRagService:
         query = f"{alert_label} {alert_details}"
         context = self.retrieve_context(query)
 
-        prompt = (
-            f"You are an expert AI Cybersecurity Analyst for an educational platform.\n"
-            f"An alert was triggered: '{alert_label}' with details: '{alert_details}'.\n"
-            f"Based on the following knowledge base context: '{context}'\n\n"
-            f"Provide a structured analysis containing:\n"
-            f"1. Threat Explanation\n"
-            f"2. Immediate Automated Action (e.g., Block IP)\n"
-            f"3. Long-term Remediation Strategy\n"
-            f"Be concise and professional."
+        system_prompt = (
+            "You are the Automated Response Engine for the IDRS (Intrusion Detection & Response System). "
+            "Your objective is to provide rigorous, highly structured, and actionable cybersecurity analysis. "
+            "Do NOT use markdown bold/italic tags (like **). Instead, use clear CAPITALIZED section titles and standard bullet points (-) "
+            "so that it renders cleanly on the frontend. Keep your tone clinical, professional, and authoritative."
+        )
+
+        user_prompt = (
+            f"INCIDENT ALERT: {alert_label}\n"
+            f"TECHNICAL DETAILS: {alert_details}\n"
+            f"RETRIEVED PLAYBOOK: {context}\n\n"
+            "Generate a rigorous incident response plan containing EXACTLY these three sections:\n\n"
+            "THREAT EXPLANATION:\n"
+            "[Provide a brief, technical explanation of the identified threat]\n\n"
+            "IMMEDIATE MITIGATION:\n"
+            "[State the exact automated mitigation step to execute, e.g., IP blocked, session terminated]\n\n"
+            "LONG-TERM REMEDIATION:\n"
+            "[Provide 1-2 specific, strategic security recommendations to prevent recurrence]"
         )
 
         if self.use_llm and self.llm_type == "huggingface":
             try:
                 response = self.hf_client.chat_completion(
                     model=self.model,
-                    messages=[{"role": "user", "content": prompt}],
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
                     max_tokens=256,
-                    temperature=0.3
+                    temperature=0.2
                 )
                 analysis = response.choices[0].message.content
                 logger.info(f"LLM response received: {analysis[:100]}...")

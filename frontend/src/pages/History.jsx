@@ -40,6 +40,28 @@ export default function History() {
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
+  const handleExport = () => {
+    const headers = ["Timestamp", "Source IP", "Destination IP", "Protocol", "Size (Bytes)", "Status"];
+    const csvRows = filtered.map(log => [
+      log.timestamp,
+      log.source_ip,
+      log.dest_ip,
+      log.protocol,
+      log.bytes,
+      log.status
+    ].join(","));
+    
+    const csvString = [headers.join(","), ...csvRows].join("\n");
+    const blob = new Blob([csvString], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `ids_history_${new Date().toISOString().split("T")[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="history-page">
       <div className="history-page__header">
@@ -47,7 +69,7 @@ export default function History() {
           <h1 className="history-page__title">Traffic History</h1>
           <p className="history-page__subtitle">{filtered.length} events logged</p>
         </div>
-        <button className="history-page__export">
+        <button className="history-page__export" onClick={handleExport}>
           <Download size={16} /> Export CSV
         </button>
       </div>

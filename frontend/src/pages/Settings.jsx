@@ -1,12 +1,75 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Shield, Ban, Trash2, CheckCircle } from "lucide-react";
 import "./Settings.css";
 
 export default function Settings() {
+  const [blacklist, setBlacklist] = useState([]);
+  const [whitelist, setWhitelist] = useState([]);
+
+  useEffect(() => {
+    fetchLists();
+  }, []);
+
+  const fetchLists = async () => {
+    try {
+      const bRes = await fetch("/api/blacklist");
+      const bData = await bRes.json();
+      setBlacklist(bData);
+
+      const wRes = await fetch("/api/whitelist");
+      const wData = await wRes.json();
+      setWhitelist(wData);
+    } catch (err) {
+      console.error("Failed to fetch firewall lists", err);
+    }
+  };
+
+  const handleRemove = async (type, ip) => {
+    try {
+      const res = await fetch(`/api/${type}/${ip}`, { method: "DELETE" });
+      if (res.ok) {
+        fetchLists();
+      }
+    } catch (err) {
+      console.error(`Failed to remove ${ip} from ${type}`, err);
+    }
+  };
+
   return (
     <div className="settings-page">
       <div className="settings-page__header">
-        <h1 className="settings-page__title">Settings</h1>
-        <p className="settings-page__subtitle">System configuration and preferences</p>
+        <h1 className="settings-page__title">Firewall & Settings</h1>
+        <p className="settings-page__subtitle">Manage blacklists, whitelists, and system configuration</p>
+      </div>
+
+      <div className="settings-page__firewall-row">
+        <div className="settings-card settings-card--firewall">
+          <h3 className="settings-card__title"><Ban size={18} /> IP Blacklist</h3>
+          <div className="firewall-list">
+            {blacklist.length === 0 ? <p className="firewall-empty">No IPs blocked.</p> :
+              blacklist.map(item => (
+                <div key={item.ip} className="firewall-item">
+                  <span>{item.ip}</span>
+                  <button onClick={() => handleRemove("blacklist", item.ip)}><Trash2 size={14} /></button>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+
+        <div className="settings-card settings-card--firewall">
+          <h3 className="settings-card__title"><Shield size={18} /> Trusted Whitelist</h3>
+          <div className="firewall-list">
+            {whitelist.length === 0 ? <p className="firewall-empty">No IPs whitelisted.</p> :
+              whitelist.map(item => (
+                <div key={item.ip} className="firewall-item">
+                  <span>{item.ip}</span>
+                  <button onClick={() => handleRemove("whitelist", item.ip)}><Trash2 size={14} /></button>
+                </div>
+              ))
+            }
+          </div>
+        </div>
       </div>
 
       <div className="settings-page__grid">

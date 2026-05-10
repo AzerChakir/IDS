@@ -5,8 +5,11 @@ class DashboardService:
         conn = get_db_connection()
         cursor = conn.cursor()
         
+        cursor.execute("SELECT COUNT(*) FROM traffic_logs")
+        total_packets = cursor.fetchone()[0] or 0
+        
         cursor.execute("SELECT SUM(bytes) FROM traffic_logs")
-        total_traffic = cursor.fetchone()[0] or 0
+        total_bytes = cursor.fetchone()[0] or 0
         
         cursor.execute("SELECT COUNT(*) FROM traffic_logs WHERE status = 'BLOCKED'")
         blocked_traffic = cursor.fetchone()[0] or 0
@@ -17,7 +20,8 @@ class DashboardService:
         conn.close()
         
         return {
-            "total_traffic_bytes": total_traffic,
+            "total_packets": total_packets,
+            "total_bytes": total_bytes,
             "blocked_connections": blocked_traffic,
             "active_threats": active_threats,
             "system_health": "Degraded" if active_threats > 2 else "Healthy"
@@ -26,7 +30,7 @@ class DashboardService:
     def get_alerts(self):
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM alerts ORDER BY id DESC LIMIT 10")
+        cursor.execute("SELECT * FROM alerts ORDER BY timestamp DESC LIMIT 10")
         alerts = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return alerts
@@ -34,7 +38,7 @@ class DashboardService:
     def get_traffic_history(self):
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM traffic_logs ORDER BY id DESC LIMIT 100")
+        cursor.execute("SELECT * FROM traffic_logs ORDER BY timestamp DESC LIMIT 100")
         logs = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return logs

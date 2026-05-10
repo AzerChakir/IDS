@@ -80,38 +80,6 @@ def init_db():
             ('admin', hashed_admin_password, 'admin')
         )
 
-    # Insert mock data if DB is empty
-    cursor.execute('SELECT COUNT(*) FROM traffic_logs')
-    if cursor.fetchone()[0] == 0:
-        now = datetime.now()
-        for i in range(50):
-            timestamp = (now - timedelta(minutes=i*15)).isoformat()
-            source_ip = f"192.168.1.{random.randint(2, 254)}"
-            
-            cursor.execute(
-                'INSERT INTO traffic_logs (timestamp, source_ip, dest_ip, protocol, bytes, status) VALUES (?, ?, ?, ?, ?, ?)',
-                (
-                    timestamp,
-                    source_ip,
-                    f"10.0.0.{random.randint(1, 100)}",
-                    random.choice(["TCP", "UDP", "ICMP"]),
-                    random.randint(100, 15000),
-                    random.choice(["ALLOWED", "BLOCKED", "ALLOWED"])
-                )
-            )
-            
-            if random.random() < 0.1:
-                cursor.execute(
-                    'INSERT INTO alerts (timestamp, severity, source_ip, type, description, status) VALUES (?, ?, ?, ?, ?, ?)',
-                    (
-                        timestamp,
-                        random.choice(["HIGH", "CRITICAL"]),
-                        source_ip,
-                        random.choice(["DDoS Attempt", "Port Scan", "Malware C2"]),
-                        "Suspicious traffic pattern detected",
-                        "UNRESOLVED"
-                    )
-                )
 
     conn.commit()
     conn.close()

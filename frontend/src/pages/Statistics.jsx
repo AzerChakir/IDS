@@ -36,15 +36,18 @@ export default function Statistics() {
   }, []);
 
   // 1. Traffic Timeline
-  const trafficTimeline = [...history].reverse().slice(-24).map(log => {
-    const d = new Date(log.timestamp);
-    return {
-      time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      inbound: log.bytes,
-      outbound: Math.floor(log.bytes * 0.4),
-      blocked: log.status === "BLOCKED" ? 100 : 0
-    };
-  });
+  const trafficTimeline = [...history]
+    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+    .slice(-24)
+    .map(log => {
+      const d = new Date(log.timestamp);
+      return {
+        time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        inbound: log.status === "ALLOWED" ? log.bytes : 0,
+        outbound: log.status === "ALLOWED" ? Math.floor(log.bytes * 0.4) : 0,
+        blocked: log.status !== "ALLOWED" ? log.bytes : 0
+      };
+    });
 
   // 2. Protocol Distribution
   const protocolCounts = history.reduce((acc, log) => {

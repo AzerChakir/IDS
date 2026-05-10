@@ -21,6 +21,15 @@ class WhitelistIP(BaseModel):
 class IsolateIP(BaseModel):
     ip: str
 
+@router.get("/blacklist")
+async def get_blacklist():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM blacklisted_ips ORDER BY timestamp DESC")
+    rows = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return rows
+
 @router.post("/blacklist")
 async def blacklist_ip(data: BlacklistIP):
     conn = get_db_connection()
@@ -50,6 +59,15 @@ async def unblacklist_ip(ip: str):
     finally:
         conn.close()
 
+@router.get("/whitelist")
+async def get_whitelist():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM whitelisted_ips ORDER BY timestamp DESC")
+    rows = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return rows
+
 @router.post("/whitelist")
 async def whitelist_ip(data: WhitelistIP):
     conn = get_db_connection()
@@ -78,6 +96,15 @@ async def unwhitelist_ip(ip: str):
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         conn.close()
+
+@router.get("/isolate")
+async def get_isolated():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM isolated_destinations ORDER BY timestamp DESC")
+    rows = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return rows
 
 @router.post("/isolate")
 async def isolate_destination(data: IsolateIP):

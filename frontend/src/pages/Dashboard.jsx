@@ -24,8 +24,8 @@ export default function Dashboard() {
         const statsRes = await fetch("/api/dashboard/stats");
         const statsData = await statsRes.json();
         setDashboardStats({
-          totalPackets: statsData.total_traffic_bytes || 0,
-          inbound: Math.floor((statsData.total_traffic_bytes || 0) * 0.7),
+          totalPackets: statsData.total_packets || 0,
+          totalBytes: statsData.total_bytes || 0,
           activeThreats: statsData.active_threats || 0,
           blockedConnections: statsData.blocked_connections || 0,
           systemHealth: statsData.system_health || "Healthy",
@@ -58,15 +58,18 @@ export default function Dashboard() {
     low: alerts.filter(a => a.severity === "LOW" && a.status === "UNRESOLVED").length,
   };
 
-  const trafficTimeline = [...history].reverse().slice(-20).map(log => {
-    const d = new Date(log.timestamp);
-    return {
-      time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      inbound: log.bytes,
-      outbound: Math.floor(log.bytes * 0.4),
-      blocked: log.status === "BLOCKED" ? 100 : 0
-    };
-  });
+  const trafficTimeline = [...history]
+    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+    .slice(-20)
+    .map(log => {
+      const d = new Date(log.timestamp);
+      return {
+        time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        inbound: log.status === "ALLOWED" ? log.bytes : 0,
+        outbound: log.status === "ALLOWED" ? Math.floor(log.bytes * 0.4) : 0,
+        blocked: log.status !== "ALLOWED" ? log.bytes : 0
+      };
+    });
 
 
   return (
@@ -91,14 +94,14 @@ export default function Dashboard() {
           title="Total Packets"
           value={dashboardStats.totalPackets.toLocaleString()}
           icon={<Activity size={22} />}
-          trend="+12.5%"
+          trend="Live count"
           trendUp
         />
         <StatCard
-          title="Inbound"
-          value={dashboardStats.inbound.toLocaleString()}
+          title="Total Traffic"
+          value={(dashboardStats.totalBytes / 1024).toFixed(1) + " KB"}
           icon={<Wifi size={22} />}
-          trend="+8.2%"
+          trend="Real-time"
           trendUp
         />
         <StatCard
@@ -106,14 +109,14 @@ export default function Dashboard() {
           value={dashboardStats.activeThreats}
           icon={<ShieldAlert size={22} />}
           alert={dashboardStats.activeThreats > 0}
-          trend="-2 from yesterday"
+          trend="Blocked IPs"
           trendUp={false}
         />
         <StatCard
           title="Blocked"
           value={dashboardStats.blockedConnections}
           icon={<Server size={22} />}
-          trend="+34"
+          trend="Manual/Auto"
           trendUp
         />
       </div>

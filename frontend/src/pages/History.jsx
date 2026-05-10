@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Download, ChevronLeft, ChevronRight } from "lucide-react";
-import { trafficLogs } from "../data/mockData";
 import "./History.css";
 
 const PAGE_SIZE = 15;
@@ -10,6 +9,23 @@ export default function History() {
   const [protocolFilter, setProtocolFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [page, setPage] = useState(1);
+  const [trafficLogs, setTrafficLogs] = useState([]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch("/api/dashboard/history");
+        const data = await res.json();
+        setTrafficLogs(data || []);
+      } catch (err) {
+        console.error("Failed to fetch live history", err);
+      }
+    };
+
+    fetchHistory();
+    const interval = setInterval(fetchHistory, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const filtered = trafficLogs.filter((log) => {
     if (protocolFilter !== "ALL" && log.protocol !== protocolFilter) return false;

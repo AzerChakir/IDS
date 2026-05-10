@@ -34,7 +34,7 @@ class DashboardService:
     def get_traffic_history(self):
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM traffic_logs ORDER BY id DESC LIMIT 20")
+        cursor.execute("SELECT * FROM traffic_logs ORDER BY id DESC LIMIT 100")
         logs = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return logs

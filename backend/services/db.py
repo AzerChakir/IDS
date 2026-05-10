@@ -49,6 +49,27 @@ def init_db():
         status TEXT NOT NULL
     )
     ''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS blacklisted_ips (
+        ip TEXT PRIMARY KEY,
+        timestamp TEXT NOT NULL
+    )
+    ''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS whitelisted_ips (
+        ip TEXT PRIMARY KEY,
+        timestamp TEXT NOT NULL
+    )
+    ''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS isolated_destinations (
+        ip TEXT PRIMARY KEY,
+        timestamp TEXT NOT NULL
+    )
+    ''')
     
     # Insert default admin if not exists
     cursor.execute('SELECT * FROM users WHERE username = ?', ('admin',))

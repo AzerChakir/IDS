@@ -40,6 +40,53 @@ export default function AlertRow({ alert, onAdmit, onBlock, onPause }) {
     }
     setAnalyzing(false);
   };
+
+  const handleAdmitAction = async () => {
+    try {
+      const res = await fetch("/api/whitelist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ip: alert.source_ip })
+      });
+      if (res.ok) {
+        onAdmit?.(alert);
+      }
+    } catch (err) {
+      console.error("Failed to whitelist IP", err);
+    }
+  };
+
+  const handlePauseAction = async () => {
+    if (!window.confirm(`Are you sure you want to ISOLATE destination server ${alert.dest_ip || "Target Server"}? This will block all incoming traffic to this server.`)) return;
+    try {
+      const res = await fetch("/api/isolate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ip: alert.dest_ip || "10.0.0.50" })
+      });
+      if (res.ok) {
+        onPause?.(alert);
+      }
+    } catch (err) {
+      console.error("Failed to isolate destination", err);
+    }
+  };
+
+  const handleBlockAction = async () => {
+    if (!window.confirm(`Are you sure you want to PERMANENTLY blacklist IP ${alert.source_ip}?`)) return;
+    try {
+      const res = await fetch("/api/blacklist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ip: alert.source_ip })
+      });
+      if (res.ok) {
+        onBlock?.(alert);
+      }
+    } catch (err) {
+      console.error("Failed to blacklist IP", err);
+    }
+  };
   return (
     <div className={`alert-row ${alert.status === "RESOLVED" ? "alert-row--resolved" : ""}`}>
       <div className="alert-row__left">
@@ -75,21 +122,21 @@ export default function AlertRow({ alert, onAdmit, onBlock, onPause }) {
         </button>
         <button
           className="alert-row__btn alert-row__btn--admit"
-          onClick={() => onAdmit?.(alert)}
+          onClick={handleAdmitAction}
           title="Admit / Whitelist"
         >
           <ShieldCheck size={16} />
         </button>
         <button
           className="alert-row__btn alert-row__btn--block"
-          onClick={() => onBlock?.(alert)}
+          onClick={handleBlockAction}
           title="Block Traffic"
         >
           <Ban size={16} />
         </button>
         <button
           className="alert-row__btn alert-row__btn--pause"
-          onClick={() => onPause?.(alert)}
+          onClick={handlePauseAction}
           title="Stop Site Temporarily"
         >
           <PauseCircle size={16} />

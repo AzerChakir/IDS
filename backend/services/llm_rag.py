@@ -123,9 +123,9 @@ class LLMRagService:
 
         user_prompt = (
             f"INCIDENT: {alert_label} | DETAILS: {alert_details} | PLAYBOOK: {context}\n\n"
-            "Respond with EXACTLY three short sentences formatted exactly like this:\n"
-            "THREAT EXPLANATION: [One short sentence explaining the threat]\n"
-            "IMMEDIATE MITIGATION: [One short sentence stating the exact automated action taken]\n"
+            "Respond with EXACTLY three short sentences. You MUST put a NEWLINE between each section. Format exactly like this:\n\n"
+            "THREAT EXPLANATION: [One short sentence explaining the threat]\n\n"
+            "IMMEDIATE MITIGATION: [One short sentence stating the exact automated action taken]\n\n"
             "LONG-TERM REMEDIATION: [One short sentence with a strategic security recommendation]"
         )
 

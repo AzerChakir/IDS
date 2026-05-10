@@ -1,14 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Filter } from "lucide-react";
 import AlertRow from "../components/AlertRow";
-import { alerts as allAlerts } from "../data/mockData";
 import "./Alerts.css";
 
 export default function Alerts() {
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [alertList, setAlertList] = useState(allAlerts);
+  const [alertList, setAlertList] = useState([]);
+
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        const res = await fetch("/api/dashboard/alerts");
+        const data = await res.json();
+        setAlertList(data || []);
+      } catch (err) {
+        console.error("Failed to fetch live alerts", err);
+      }
+    };
+
+    fetchAlerts();
+    const interval = setInterval(fetchAlerts, 3000); // Poll every 3 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAdmit = (alert) => {
     setAlertList((prev) =>

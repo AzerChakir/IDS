@@ -1,33 +1,87 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import TrafficChart from "../components/TrafficChart";
-import { trafficTimeline, protocolDistribution, topSourceIPs } from "../data/mockData";
 import "./Statistics.css";
-
-// Bar chart data: top source IPs
-const barData = topSourceIPs.map((ip) => ({
-  ip: ip.ip.replace("192.168.1.", "*."),
-  requests: ip.requests,
-  fill:
-    ip.status === "blocked" ? "#ff4757" :
-    ip.status === "suspicious" ? "#ff9f43" : "#00d4ff",
-}));
 
 const CustomBarTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
     <div className="stats-tooltip">
-      <p style={{ fontWeight: 600 }}>{topSourceIPs.find((i) => d.ip === i.ip.replace("192.168.1.", "*."))?.ip || d.ip}</p>
+      <p style={{ fontWeight: 600 }}>{d.originalIp || d.ip}</p>
       <p>{d.requests.toLocaleString()} requests</p>
     </div>
   );
 };
 
 export default function Statistics() {
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch("/api/dashboard/history");
+        const data = await res.json();
+        setHistory(data || []);
+      } catch (err) {
+        console.error("Failed to fetch live history", err);
+      }
+    };
+    fetchHistory();
+    const interval = setInterval(fetchHistory, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // 1. Traffic Timeline
+  const trafficTimeline = [...history].reverse().slice(-24).map(log => {
+    const d = new Date(log.timestamp);
+    return {
+      time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      inbound: log.bytes,
+      outbound: Math.floor(log.bytes * 0.4),
+      blocked: log.status === "BLOCKED" ? 100 : 0
+    };
+  });
+
+  // 2. Protocol Distribution
+  const protocolCounts = history.reduce((acc, log) => {
+    acc[log.protocol] = (acc[log.protocol] || 0) + 1;
+    return acc;
+  }, {});
+  const colors = { TCP: "#00d4ff", UDP: "#7b61ff", HTTP: "#00e68a", HTTPS: "#3b82f6", ICMP: "#ef4444" };
+  const protocolDistribution = Object.keys(protocolCounts).map(proto => ({
+    name: proto,
+    value: protocolCounts[proto],
+    color: colors[proto] || "#f59e0b"
+  }));
+
+  // 3. Top Source IPs
+  const ipCounts = history.reduce((acc, log) => {
+    if (!acc[log.source_ip]) acc[log.source_ip] = { requests: 0, blocks: 0 };
+    acc[log.source_ip].requests++;
+    if (log.status === "BLOCKED") acc[log.source_ip].blocks++;
+    return acc;
+  }, {});
+  
+  const topSourceIPs = Object.keys(ipCounts)
+    .map(ip => ({
+      ip,
+      requests: ipCounts[ip].requests,
+      status: ipCounts[ip].blocks > 0 ? "blocked" : "normal"
+    }))
+    .sort((a, b) => b.requests - a.requests)
+    .slice(0, 8);
+
+  const barData = topSourceIPs.map((ip) => ({
+    ip: ip.ip.replace("192.168.1.", "*."),
+    originalIp: ip.ip,
+    requests: ip.requests,
+    fill: ip.status === "blocked" ? "#ff4757" : "#00d4ff",
+  }));
+
   return (
     <div className="statistics-page">
       <div className="statistics-page__header">
@@ -36,7 +90,7 @@ export default function Statistics() {
       </div>
 
       {/* Traffic Timeline */}
-      <TrafficChart data={trafficTimeline} title="24-Hour Traffic Overview" />
+      <TrafficChart data={trafficTimeline} title="Recent Traffic Activity" />
 
       <div className="statistics-page__grid">
         {/* Protocol Distribution */}

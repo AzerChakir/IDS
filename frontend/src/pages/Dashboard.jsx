@@ -1,13 +1,73 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Activity, ShieldAlert, Server, Wifi, TrendingUp, Clock } from "lucide-react";
 import StatCard from "../components/StatCard";
 import TrafficChart from "../components/TrafficChart";
 import AlertRow from "../components/AlertRow";
-import { dashboardStats, severityCounts, trafficTimeline, alerts } from "../data/mockData";
+
 import "./Dashboard.css";
 
 export default function Dashboard() {
+  const [dashboardStats, setDashboardStats] = useState({
+    totalPackets: 0,
+    inbound: 0,
+    activeThreats: 0,
+    blockedConnections: 0,
+    systemHealth: "Healthy",
+    uptime: "99.9%"
+  });
+  const [alerts, setAlerts] = useState([]);
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const statsRes = await fetch("/api/dashboard/stats");
+        const statsData = await statsRes.json();
+        setDashboardStats({
+          totalPackets: statsData.total_traffic_bytes || 0,
+          inbound: Math.floor((statsData.total_traffic_bytes || 0) * 0.7),
+          activeThreats: statsData.active_threats || 0,
+          blockedConnections: statsData.blocked_connections || 0,
+          systemHealth: statsData.system_health || "Healthy",
+          uptime: "99.9%"
+        });
+
+        const alertsRes = await fetch("/api/dashboard/alerts");
+        const alertsData = await alertsRes.json();
+        setAlerts(alertsData || []);
+        
+        const histRes = await fetch("/api/dashboard/history");
+        const histData = await histRes.json();
+        setHistory(histData || []);
+      } catch (err) {
+        console.error("Failed to fetch live data", err);
+      }
+    };
+
+    fetchData(); // Initial fetch
+    const interval = setInterval(fetchData, 3000); // Poll every 3 seconds for real-time effect
+    return () => clearInterval(interval);
+  }, []);
+
   const recentAlerts = alerts.filter((a) => a.status === "UNRESOLVED").slice(0, 5);
+
+  const severityCounts = {
+    critical: alerts.filter(a => a.severity === "CRITICAL" && a.status === "UNRESOLVED").length,
+    high: alerts.filter(a => a.severity === "HIGH" && a.status === "UNRESOLVED").length,
+    medium: alerts.filter(a => a.severity === "MEDIUM" && a.status === "UNRESOLVED").length,
+    low: alerts.filter(a => a.severity === "LOW" && a.status === "UNRESOLVED").length,
+  };
+
+  const trafficTimeline = [...history].reverse().slice(-20).map(log => {
+    const d = new Date(log.timestamp);
+    return {
+      time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      inbound: log.bytes,
+      outbound: Math.floor(log.bytes * 0.4),
+      blocked: log.status === "BLOCKED" ? 100 : 0
+    };
+  });
+
 
   return (
     <div className="dashboard">
